@@ -42,13 +42,30 @@ jobs:
  
       - name: "Verificar reporte"
         run: ls -ltra reports
-      - name: "Horusec"
-        run: curl -fsSL https://raw.githubusercontent.com/ZupIT/horusec/main/deployments/scripts/install.sh | bash -s latest-beta
  
-      #- name:   "Horusec reporte"
-      #  run: horusec start -p="./" --return-error="false"
- 
-      - name: Build and run Docker containers
+      - name: "Instalando Horusec"
         run: |
-          docker build -t prueba .
-          docker image ls
+          curl -fsSL https://raw.githubusercontent.com/ZupIT/horusec/main/deployments/scripts/install.sh | bash -s latest-beta
+ 
+      - name: "Horusec -SAST"
+        run: horusec start -p="./"
+ 
+      - name: "Imagen Docker"
+        run: |
+          docker build -f Dockerfile . -t webgoat/test
+          docker images
+ 
+      - name: "Evaluacion de imagen"
+        run: |
+          wget https://github.com/aquasecurity/trivy/releases/download/v0.18.3/trivy_0.18.3_Linux-64bit.deb
+          sudo dpkg -i trivy_0.18.3_Linux-64bit.deb
+          trivy image webgoat/test
+          
+      - name: "Crear dontenedor"
+        run: docker run -d -p 8080:80 --name codigo webgoat/test
+    
+      - name: "Listar"
+        run: docker ps -a
+ 
+      - name: "Inicia"
+        run: docker container start codigo
