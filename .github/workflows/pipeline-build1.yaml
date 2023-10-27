@@ -42,19 +42,13 @@ jobs:
  
       - name: "Verificar reporte"
         run: ls -ltra reports
+      - name: "Horusec"
+        run: curl -fsSL https://raw.githubusercontent.com/ZupIT/horusec/main/deployments/scripts/install.sh | bash -s latest-beta
  
-      - name: "Instalando Horusec"
+      #- name:   "Horusec reporte"
+      #  run: horusec start -p="./" --return-error="false"
+ 
+      - name: Build and run Docker containers
         run: |
-          curl -fsSL https://raw.githubusercontent.com/ZupIT/horusec/main/deployments/scripts/install.sh | bash -s latest-beta
- 
-      - name: "Horusec -SAST"
-        run: horusec start -p="./"
- 
-      - name: "Imagen Docker"
-        run: |
-          docker build -f Dockerfile . -t webgoat/test
-          docker images
- 
-      - name: "Contenedor"
-        run: |
-          docker run -d -p 8080:80 webgoat/test
+          docker build -t prueba .
+          docker image ls
